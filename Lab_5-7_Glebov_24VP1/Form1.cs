@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Eventing.Reader;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace Lab_5_7_Glebov_24VP1
 {
     public partial class Form1 : Form
     {
-        private int[] array;
+        private long[] array;
         private int N = 10000000; 
         int iterations = 1000000;
         public Form1()
@@ -17,12 +18,12 @@ namespace Lab_5_7_Glebov_24VP1
         private void Form1_Load(object sender, EventArgs e)
         {
             Random rnd = new Random();
-            array = new int[N];
-            int minElem = 0;
+            array = new long[N];
+            long minElem = 0;
 
             for (int i = 0; i < N; i++)
             {
-                array[i] = rnd.Next(minElem, minElem + 5);
+                array[i] = rnd.Next((int)minElem, (int)minElem + 5);
                 minElem = array[i];
             }
         }
@@ -30,9 +31,9 @@ namespace Lab_5_7_Glebov_24VP1
         {
             binary_search_non_optimal();
             binary_search_optimal();
-            //binary_interpol_search();
-            sequential_binary_search();
-            sequential_ordered_binary_search();
+            binary_interpol_search();
+            //sequential_binary_search();
+            //sequential_ordered_binary_search();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -68,6 +69,7 @@ namespace Lab_5_7_Glebov_24VP1
                         R = i - 1;
                     else
                         L = i + 1;
+
                 }
             }
 
@@ -116,25 +118,28 @@ namespace Lab_5_7_Glebov_24VP1
             else
                 textBox4.Text = resultIndex.ToString();
         }
-        /*private void binary_interpol_search()
+
+        private void binary_interpol_search()
         {
+            iterations = 100000;
             int key = (int)numericUpDown2.Value;
-            int resultIndex = -1;
+            long resultIndex = -1;
 
             int start = Environment.TickCount;
 
             for (int j = 0; j < iterations; j++)
             {
                 // Интерполяционный бинарный поиск
-                int L = 1;
-                int R = N;
+                long L = 0;
+                long R = N - 1;
                 resultIndex = -1;
-                while ((L <= R) && (key >= array[L]) && (key <= array[R]))
+                while (key >= array[L] && key <= array[R])
                 {
-                    if (array[L] == array[R])
-                        break;
+                    long i = (L + (key - array[L]) * (R - L)) / (array[R] - array[L]);
+                    
+                    if (i < L) i = L;
+                    if (i > R) i = R;
 
-                    int i = (L + (key - array[L]) * (R - L)) / (array[R] - array[L]);
                     if (key == array[i])
                     {
                         resultIndex = i;
@@ -142,17 +147,22 @@ namespace Lab_5_7_Glebov_24VP1
                     }
 
                     else if (key < array[i])
+                    {
                         R = i - 1;
+                    }
                     else
+                    {
                         L = i + 1;
+                    }
+                    
                 }
 
-                if (resultIndex == -1 && key == array[L])
+                if (key == array[L])
                 {
                     resultIndex = L;
                 }
 
-                else if (resultIndex == -1 && key == array[R])
+                else if (key == array[R])
                 {
                     resultIndex = R;
                 }
@@ -167,7 +177,7 @@ namespace Lab_5_7_Glebov_24VP1
             else
                 textBox6.Text = resultIndex.ToString();
         }
-        */
+        
         private void sequential_binary_search()
         {
             int key = (int)numericUpDown2.Value;
